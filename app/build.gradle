@@ -1,0 +1,59 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
+    defaultConfig {
+        applicationId "com.march.turbojpeg"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+//                cppFlags "-frtti -fexceptions"
+//                arguments "-DANDROID_TOOLCHAIN=clang"
+                abiFilters 'armeabi'
+            }
+        }
+
+        ndk {
+            //打包进APK的ABI类型
+            abiFilters 'armeabi'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+    sourceSets {
+        main {
+            java.srcDirs 'src/java'
+            jniLibs.srcDirs  'libs'
+//            jniLibs.srcDirs '../libjpeg/prebuilt', 'libs'
+
+            // 这里没有添加libjpeg.so这个动态库，也是可以执行的。
+            // 原因在于android本身使用了 libjpeg.so这个动态库，
+            // 这个库存放在/system/lib下，如果我们没有加入
+            // libjpeg.so的话，他会去/system/lib下加载这个动态库
+
+            // 如果android手机上没有 libjpeg.so这个动态库的话，
+            // 也可以使用: jniLibs.srcDirs '../libjpeg/prebuilt' 'libcd
+            // 将libjpeg.so加入到apk中
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:25.3.1'
+
+}
